@@ -25,7 +25,7 @@ export interface QuantizedTopology {
 export interface MapState {
     currentView: 'national' | 'state' | 'county';
     currentFeature: Feature | null;
-    transitionInProgress: boolean;
+    currentTransform: ZoomTransform | null;
 }
 
 interface StateProperties {

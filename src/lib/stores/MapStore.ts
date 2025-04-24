@@ -6,5 +6,5 @@ import { writable } from 'svelte/store';
 export const mapStore = writable<MapState>({
     currentView: 'national',
     currentFeature: null,
-    transitionInProgress: false
+    currentTransform: null,
 });

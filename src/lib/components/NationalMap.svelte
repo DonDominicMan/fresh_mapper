@@ -3,9 +3,8 @@
 	import type { State } from '$lib/types/mapping.ts';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { mapStore } from '$lib/stores/MapStore.js';
 
-    
     const { states } = $props();
     const width = 975;
     const height = 610;
@@ -16,21 +15,26 @@
     let zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown>;
     let transform = $state(d3.zoomIdentity);
 
-    // State management
-    let hoveredState: State | null = $state(null);
-    let focusState: State | null = $state(null);
-    let selectedState: State | null = $state(null);
-
     let transformString = $derived(`
         translate(${transform.x} ${transform.y})
         scale(${transform.k})
     `);
 
+    let hoveredState: State | null = $state(null);
+    let focusState: State | null = $state(null);
+    let selectedState: State | null = $state(null);
+
+
     function handleStateClick(feature: State) {
         selectedState = feature;
+        mapStore.set({
+            currentView: 'state',
+            currentFeature: feature,
+            currentTransform: transform
+        })
         zoomTo(feature);
         // mapStore.zoomToFeature(feature, $mapStore.fullWidth, $mapStore.fullHeight);
-        // goto(`/${feature.properties.code}`);
+        goto(`/${feature.properties.code}`);
     }
 
     function handleKeyDown(event: KeyboardEvent, feature: State) {
@@ -97,7 +101,6 @@
                 class="geoState"
                 fill={focusState?.id === state?.id  ? 'red' : hoveredState?.id  === state?.id ? '#666' : '#444'}
                 stroke="white"
-                transition:fly={{ y: 200, duration: 2000 }}
                 stroke-width={1 / transform.k}
                 onclick={() => handleStateClick(state)}
                 onkeydown={(e) => handleKeyDown(e, state)}
