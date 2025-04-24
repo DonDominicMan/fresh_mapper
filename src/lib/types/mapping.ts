@@ -21,12 +21,6 @@ export interface QuantizedTopology {
     arcs: number[][][];
 }
 
-export interface MapStore {
-    nationalFeature: QuantizedTopology,
-    stateFeature: State | null,
-    countyFeature: County | null,
-}
-
 interface StateProperties {
     abbrev: string;
     code: string;

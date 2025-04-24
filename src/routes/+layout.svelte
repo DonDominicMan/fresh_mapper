@@ -10,15 +10,10 @@
 
     const toggleSidebar = () => isOpen = !isOpen;
 
-    const mapStore = writable<MapStore>({
-        nationalFeature: data.US_QUANITIZED_TOPOLOGY,
-        stateFeature: null,
-        countyFeature: null,
-    });
 </script>
 
 <main>
-    <NationalMap data={data} mapStore={mapStore}></NationalMap>
+    <NationalMap data={data}></NationalMap>
 </main>
 
 <Aside 
