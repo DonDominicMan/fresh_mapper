@@ -1,5 +1,5 @@
 <script>
-    let { selectedFeatureName, isOpen, toggleSidebar} = $props();
+    let { selectedFeatureName, isOpen, toggleSidebar, children} = $props();
 </script>
   
   <div class="sidebar-container">
@@ -9,9 +9,7 @@
       </button>
       
       <div class="sidebar-content">
-        <h1>{selectedFeatureName}</h1>
-
-        <!-- STATE DATA -->
+        {@render children()}
       </div>
     </aside>
   

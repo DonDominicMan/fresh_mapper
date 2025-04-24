@@ -3,5 +3,5 @@
 </script>
 
 <h1>
-    {data.state?.properties.name || "...loading"} state
+    {data.county?.properties.name || "...loading"} county
 </h1>

@@ -1,11 +1,10 @@
 import type { GeometryObject } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Feature } from 'geojson'
-import type { ZoomTransform } from 'd3-zoom';
 
 export type StateCollection = FeatureCollection<Geometry, StateProperties>;
 export type CountyCollection = FeatureCollection<Geometry, CountyProperties>;
 export type State = Feature<Geometry, StateProperties>;
-export type County = Feature<Geometry, StateProperties>;
+export type County = Feature<Geometry, CountyProperties>;
 
 export interface QuantizedTopology {
     type: "Topology";
@@ -22,10 +21,10 @@ export interface QuantizedTopology {
     arcs: number[][][];
 }
 
-export interface MapState {
-    currentView: 'national' | 'state' | 'county';
-    currentFeature: Feature | null;
-    currentTransform: ZoomTransform | null;
+export interface MapStore {
+    nationalFeature: QuantizedTopology,
+    stateFeature: State | null,
+    countyFeature: County | null,
 }
 
 interface StateProperties {
