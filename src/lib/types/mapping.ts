@@ -26,9 +26,6 @@ export interface MapState {
     currentView: 'national' | 'state' | 'county';
     currentFeature: Feature | null;
     transitionInProgress: boolean;
-    fullHeight: number;
-    fullWidth: number;
-    transform: ZoomTransform;
 }
 
 interface StateProperties {
