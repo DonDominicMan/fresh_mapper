@@ -1,106 +1,42 @@
 <script lang="ts">
-    import * as d3 from 'd3';
     import type { County } from '$lib/types/mapping.ts';
-    import { mapStore } from '$lib/stores/MapStore.js';
-	import { onMount } from 'svelte';
-    import type { Feature } from 'geojson';
+    import * as d3 from 'd3';
+	import { goto } from '$app/navigation';
+    import { tooltip } from './tooltip.js';
+    import { transform } from "$lib/stores/MapStore.js";
+    import { page } from '$app/state';
 
-    let { counties } = $props();
-    const width = 975;
-    const height = 610;
-
-    // Get map data
+    const { counties } = $props();
     const geoPath = d3.geoPath();
-    let svgElement: SVGSVGElement;
-    let zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown>;
-    let transform = $state($mapStore?.currentTransform || d3.zoomIdentity);
-
-    let transformString = $derived(`
-        translate(${transform.x} ${transform.y})
-        scale(${transform.k})
-    `);
 
     let hoverCounty: County | null = $state(null);
     let focusCounty: County | null = $state(null);
-    let selectedCounty: County | null = $state(null);
-
-    function handleCountyClick(feature: County) {
-        selectedCounty = feature;
-    }
-
-    function handleKeyUp(event: KeyboardEvent, feature: County) {
-        event.stopPropagation();
-        if(event.key === 'Enter'){
-            handleCountyClick(feature);
-        }
-    }
-
-    onMount(() => {
-        // Initialize MOUSEPAD zoom behavior
-        zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
-            .scaleExtent([1, 8])
-            .on('zoom', (event) => {
-                transform = event.transform;
-            });
-            
-        // Apply to SVG
-        d3.select(svgElement).call(zoomBehavior);
-
-        // Initial zoom
-        if($mapStore.currentFeature){
-            zoomTo($mapStore.currentFeature);
-        }
-    });
-
-    function zoomTo(feature: Feature | County) {
-        const [[x0, y0], [x1, y1]] = geoPath.bounds(feature);
-        const scale = Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height));
-        const translate: [number, number] = [-(x0 + x1) / 2, -(y0 + y1) / 2];
-        
-        const targetTransform = d3.zoomIdentity
-            .translate(width / 2, height / 2)
-            .scale(scale)
-            .translate(...translate);
-
-        // Apply with transition
-        d3.select(svgElement)
-            .transition()
-            .duration(2000) // 1 second animation
-            .ease(d3.easeCubicInOut) // Smooth easing
-            .call(zoomBehavior.transform, targetTransform);
-    }
+    let currentUrl = $state(page.url.pathname);
+    console.log(currentUrl);
 </script>
 
-<svg
-    bind:this={svgElement}
-    width={width}
-    height={height}
-    viewBox="0 0 {width} {height}"
-    preserveAspectRatio="xMidYMid meet"
->
-    <g transform={transformString}>
-        <!-- States -->
-        {#each counties as county (county.id)}
-            <path
-                role="button"
-                d={geoPath(county)}
-                class="geoCounty"
-                fill={selectedCounty?.id === county?.id ? 'blue' : hoverCounty?.id === county?.id ? '#666' : '#444'}
-                stroke="white"
-                stroke-width={1/ transform.k}
-                onclick={() => zoomTo(county)}
-                onkeyup={(e) => handleKeyUp(e, county)}
-                onmouseover={() => hoverCounty = county}
-                onmouseout={() => hoverCounty = null}
-                onfocus={() => focusCounty = county}
-                onblur={() => focusCounty = null}
-                tabindex={Number(county.id)}
-            >
-                <title>{county?.properties?.name}</title>
-            </path>
-        {/each}
-    </g>
-</svg>
+<g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
+    <!-- States -->
+    {#each counties as county (county.id)}
+        <path
+            role="button"
+            d={geoPath(county)}
+            class="geoCounty"
+            fill={focusCounty?.id === county.id ? 'red' : hoverCounty?.id === county.id ? '#666' : '#444'}
+            stroke="white"
+            stroke-width={1/ $transform.k}
+            onclick={() => goto(`${currentUrl}/${county.id}`)}
+            onkeyup={(e) => e.key === 'Enter' ? goto(`${currentUrl}/${county.id}`) : null}
+            onmouseover={() => hoverCounty = county}
+            onmouseout={() => hoverCounty = null}
+            onfocus={() => focusCounty = county}
+            onblur={() => focusCounty = null}
+            tabindex={currentUrl.split('/').length > 2 ? -1 : Number(county.id)}
+            data-title={county?.properties?.name}
+            use:tooltip
+        />
+    {/each}
+</g>
 
 
 <style>

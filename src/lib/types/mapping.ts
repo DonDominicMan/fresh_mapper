@@ -6,7 +6,7 @@ export type CountyCollection = FeatureCollection<Geometry, CountyProperties>;
 export type State = Feature<Geometry, StateProperties>;
 export type County = Feature<Geometry, CountyProperties>;
 
-export interface QuantizedTopology {
+export type QuantizedTopology = {
     type: "Topology";
     bbox: [number, number, number, number];
     transform: {

@@ -1,7 +1,5 @@
 <script lang="ts">
-    let { data } = $props();
+
 </script>
 
-<h1>
-    {data.state?.properties.name || "...loading"} state
-</h1>
+<div></div>
