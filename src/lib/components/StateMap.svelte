@@ -3,16 +3,33 @@
     import * as d3 from 'd3';
 	import { goto } from '$app/navigation';
     import { tooltip } from './tooltip.js';
-    import { transform } from "$lib/stores/MapStore.js";
-    import { page } from '$app/state';
+    import { feature, transform } from "$lib/stores/MapStore.js";
 
-    const { counties } = $props();
     const geoPath = d3.geoPath();
+    let { stateCode, counties } = $props();
 
     let hoverCounty: County | null = $state(null);
     let focusCounty: County | null = $state(null);
-    let currentUrl = $state(page.url.pathname);
-    console.log(currentUrl);
+    let selectedCounty: County | null = $state(null);
+
+    const handleCountyClick = (feature: County) => {
+        selectedCounty = feature;
+        goto(`/${stateCode}/${feature.id}`);
+    }
+
+    // const handleKeyUp = (event: KeyboardEvent, county: County) => {
+    //     if(event.key === 'Enter'){
+    //         handleCountyClick(county);
+    //     } else if(event.key === 'Escape'){
+    //         if(selectedCounty){
+    //             selectedCounty = null;
+    //             goto(`/${stateCode}`);
+    //         } else {
+    //             feature.set(undefined);
+    //             goto('/');
+    //         }
+    //     }
+    // }
 </script>
 
 <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
@@ -22,16 +39,16 @@
             role="button"
             d={geoPath(county)}
             class="geoCounty"
-            fill={focusCounty?.id === county.id ? 'red' : hoverCounty?.id === county.id ? '#666' : '#444'}
+            fill={focusCounty?.id === county.id ? 'red' : $feature?.id === county.id ? 'blue' : hoverCounty?.id === county.id ? '#666' : '#444'}
             stroke="white"
             stroke-width={1/ $transform.k}
-            onclick={() => goto(`${currentUrl}/${county.id}`)}
-            onkeyup={(e) => e.key === 'Enter' ? goto(`${currentUrl}/${county.id}`) : null}
+            onclick={() => handleCountyClick(county)}
+            onkeyup={(e) => e.key === 'Enter' ? handleCountyClick(county) : null}
             onmouseover={() => hoverCounty = county}
             onmouseout={() => hoverCounty = null}
             onfocus={() => focusCounty = county}
             onblur={() => focusCounty = null}
-            tabindex={currentUrl.split('/').length > 2 ? -1 : Number(county.id)}
+            tabindex={Number(county.id)}
             data-title={county?.properties?.name}
             use:tooltip
         />
