@@ -6,30 +6,33 @@
     import { feature, transform } from "$lib/stores/MapStore.js";
 
     const geoPath = d3.geoPath();
-    let { stateCode, counties } = $props();
+    let { currentState, counties } = $props();
 
     let hoverCounty: County | null = $state(null);
     let focusCounty: County | null = $state(null);
     let selectedCounty: County | null = $state(null);
-
-    const handleCountyClick = (feature: County) => {
-        selectedCounty = feature;
-        goto(`/${stateCode}/${feature.id}`);
+    
+    const handleCountyClick = (county: County) => {
+        selectedCounty = county;
+        feature.set(county);
+        goto(`/${currentState.properties.code}/${county.id}`);
     }
 
-    // const handleKeyUp = (event: KeyboardEvent, county: County) => {
-    //     if(event.key === 'Enter'){
-    //         handleCountyClick(county);
-    //     } else if(event.key === 'Escape'){
-    //         if(selectedCounty){
-    //             selectedCounty = null;
-    //             goto(`/${stateCode}`);
-    //         } else {
-    //             feature.set(undefined);
-    //             goto('/');
-    //         }
-    //     }
-    // }
+    const handleKeyUp = (event: KeyboardEvent, county: County) => {
+        if(event.key === 'Enter'){
+            handleCountyClick(county);
+        } else if(event.key === 'Escape'){
+            if(selectedCounty){
+                selectedCounty = null;
+                feature.set(currentState);
+                goto(`/${currentState.properties.code}`);
+            } else {
+                selectedCounty = null;
+                feature.set(undefined);
+                goto('/');
+            }
+        }
+    }
 </script>
 
 <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
@@ -39,11 +42,11 @@
             role="button"
             d={geoPath(county)}
             class="geoCounty"
-            fill={focusCounty?.id === county.id ? 'red' : $feature?.id === county.id ? 'blue' : hoverCounty?.id === county.id ? '#666' : '#444'}
-            stroke="white"
+            fill={focusCounty?.id === county.id ? 'red' : $feature?.id === county.id ? 'blue' : hoverCounty?.id === county.id ? '#32CD32' : '#228B22'}
+            stroke="#333"
             stroke-width={1/ $transform.k}
             onclick={() => handleCountyClick(county)}
-            onkeyup={(e) => e.key === 'Enter' ? handleCountyClick(county) : null}
+            onkeyup={(e) => handleKeyUp(e, county)}
             onmouseover={() => hoverCounty = county}
             onmouseout={() => hoverCounty = null}
             onfocus={() => focusCounty = county}

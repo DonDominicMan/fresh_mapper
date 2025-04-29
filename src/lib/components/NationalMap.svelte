@@ -3,7 +3,8 @@
 	import type { State } from '$lib/types/mapping.ts';
 	import { goto } from '$app/navigation';
 	import { tooltip } from './tooltip.js';
-    import { transform } from '$lib/stores/MapStore.js';
+    import { feature, transform } from '$lib/stores/MapStore.js';
+	import { onMount } from 'svelte';
 
     const { states } = $props();
     const geoPath = d3.geoPath();
@@ -12,10 +13,15 @@
     let focusState: State | null = $state(null);
     let selectedState: State | null = $state(null);
 
-    const handleStateClick = (feature: State) => {
-        selectedState = feature;
-        goto(`/${feature.properties?.code}`);
+    const handleStateClick = (state: State) => {
+        selectedState = state;
+        feature.set(state);
+        goto(`/${state.properties?.code}`);
     }
+
+    onMount(() => {
+        feature.subscribe((value) => !value ? selectedState = null : null)
+    })
 </script>
 
 <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
@@ -25,8 +31,8 @@
             role="button"
             d={geoPath(state)}
             class="geoState"
-            fill={focusState?.id === state.id ? 'red' : hoverState?.id === state.id ? '#666' : '#444'}
-            stroke="white"
+            fill={focusState?.id === state.id ? 'red' : hoverState?.id === state.id ? '#32CD32' : '#228B22'}
+            stroke="#333"
             stroke-width={1/$transform.k}
             onclick={() => handleStateClick(state)}
             onkeyup={(e) => e.key === 'Enter' ? handleStateClick(state) : null}

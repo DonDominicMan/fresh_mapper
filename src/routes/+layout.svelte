@@ -4,6 +4,7 @@
 	import NationalMap from "$lib/components/NationalMap.svelte";
     import { feature, transform } from '$lib/stores/MapStore.js';
 	import { onMount } from 'svelte';
+	import Aside from '$lib/components/aside.svelte';
 
     let { data, children } = $props();
 
@@ -24,21 +25,19 @@
         
         d3.select(svg).call(zoom);
         feature.subscribe((value) => {
-            if(value){
-                console.log(value);
-                zoomToFeature(value);
-            }
+            zoomToFeature(value);
         });
     })
     
     const zoomToFeature = (feature?: Feature) => {
         const targetTransform = getTargetTransform(feature);
         // Apply with transition
-        d3.select(svg)
-            .transition()
-            .duration(1800)
-            .ease(d3.easeCubicInOut)
-            .call(zoom.transform, targetTransform);
+        if(zoom)
+            d3.select(svg)
+                .transition()
+                .duration(1800)
+                .ease(d3.easeCubicInOut)
+                .call(zoom.transform, targetTransform);
     }
 
     const getTargetTransform = (feature?: Feature) => {
@@ -63,20 +62,20 @@
         bind:this={svg}
         width={width}
         height={height}
-        style="border: solid 1px blue;"
-        style:background="royalblue"
+        style:border="solid 5px blue"
+        style:background="#999"
+        
     >
         <NationalMap states={data.states}></NationalMap>
         {@render children()}
     </svg>
 </div>
+<Aside></Aside>
 
 
 <style>
     .map-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
+        width: 90vw;
     }
+    
 </style>
