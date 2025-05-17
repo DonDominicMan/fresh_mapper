@@ -4,9 +4,13 @@
 	import NationalMap from "$lib/components/NationalMap.svelte";
     import { feature, transform } from '$lib/stores/MapStore.js';
 	import { onMount } from 'svelte';
-	import Aside from '$lib/components/aside.svelte';
+	import MapSettings from '$lib/components/MapSettings.svelte';
+	import FeatureInfo from '$lib/components/FeatureInfo.svelte';
+
 
     let { data, children } = $props();
+
+    console.log({data});
 
     const width = 975;
     const height = 610;
@@ -15,7 +19,7 @@
     let zoom: d3.ZoomBehavior<SVGElement, unknown>;
 
 
-    onMount(() => {
+    onMount(async () => {
         zoom = d3.zoom<SVGElement, unknown>()
             .scaleExtent([1, 8])
             .on('zoom', (event) => {
@@ -57,25 +61,63 @@
     }
 </script>
 
-<div class="map-container">
-    <svg
-        bind:this={svg}
-        width={width}
-        height={height}
-        style:border="solid 5px blue"
-        style:background="#999"
+<div id="page-container">
+    <!-- <aside id="settings">
+        <MapSettings></MapSettings>
+    </aside> -->
+    
+    <main>
+        <header>
+            <h1>{$feature?.properties?.name || "United States of America"}</h1>
+        </header>
         
-    >
-        <NationalMap states={data.states}></NationalMap>
-        {@render children()}
-    </svg>
+        <svg
+            bind:this={svg}
+            width={width}
+            height={height}
+            style:border="solid 5px blue"
+            style:background="#999"
+            
+            >
+            <NationalMap states={data.states}></NationalMap>
+            {@render children()}
+        </svg>
+
+        <h1>More Content To Come...</h1>
+        <div class="hidden-content"></div>
+    </main>
+
+    <!-- <aside id="feature">
+        <FeatureInfo></FeatureInfo>
+    </aside> -->
 </div>
-<Aside></Aside>
 
 
 <style>
-    .map-container {
-        width: 90vw;
+    .hidden-content{
+        height: 200vh;
     }
+    #page-container {
+        display: flex;
+        position: relative;
+    }
+
+    aside {
+        width: 100px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        background: rgba(40, 40, 60, 1);
+    }
+
+    #settings {
+        left: 0;
+    }
+
+    #feature {
+        right: 0;
+    }
+
+
     
 </style>
