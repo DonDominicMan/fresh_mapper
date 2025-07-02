@@ -10,7 +10,7 @@
 
     let { data, children } = $props();
 
-    console.log({data});
+    // console.log({data});
 
     const width = 975;
     const height = 610;

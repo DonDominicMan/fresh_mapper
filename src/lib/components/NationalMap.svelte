@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 
     const { states } = $props();
+    // console.log(districts);
     const geoPath = d3.geoPath();
     
     let hoverState: State | null = $state(null);
@@ -26,7 +27,7 @@
 
 <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
     <!-- States -->
-    {#each states as state (state.id)}
+    {#each states as state}
         <path
             role="button"
             d={geoPath(state)}
