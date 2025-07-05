@@ -10,8 +10,6 @@
 
     let { data, children } = $props();
 
-    // console.log({data});
-
     const width = 975;
     const height = 610;
 
@@ -79,6 +77,7 @@
             style:background="#999"
             
             >
+            
             <NationalMap states={data.states}></NationalMap>
             {@render children()}
         </svg>

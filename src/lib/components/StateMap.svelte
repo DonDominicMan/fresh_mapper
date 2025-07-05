@@ -6,7 +6,8 @@
     import { feature, transform } from "$lib/stores/MapStore.js";
 
     const geoPath = d3.geoPath();
-    let { currentState, counties } = $props();
+    let { currentState, counties, districts } = $props();
+    console.log(districts);
 
     let hoverCounty: County | null = $state(null);
     let focusCounty: County | null = $state(null);
@@ -35,8 +36,8 @@
     }
 </script>
 
+<!-- Counties -->
 <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
-    <!-- States -->
     {#each counties as county (county.id)}
         <path
             role="button"
@@ -57,6 +58,21 @@
         />
     {/each}
 </g>
+
+<!-- Congressional Districts -->
+<!-- <g transform={`translate(${$transform.x} ${$transform.y}) scale(${$transform.k})`}>
+    {#each districts as district}
+    <path
+            role="button"
+            d={geoPath(district)}
+            class="geoCounty"
+            stroke="#333"
+            stroke-width={1/ $transform.k}
+            data-title={district.properties.NAMELSAD}
+            use:tooltip
+        />
+    {/each}
+</g> -->
 
 
 <style>

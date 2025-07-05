@@ -5,6 +5,9 @@ export type StateCollection = FeatureCollection<Geometry, StateProperties>;
 export type CountyCollection = FeatureCollection<Geometry, CountyProperties>;
 export type State = Feature<Geometry, StateProperties>;
 export type County = Feature<Geometry, CountyProperties>;
+export type CD = Feature<Geometry, DistrictProperties>;
+
+export type CDCollection = Feature<Geometry, DistrictProperties>[]
 
 export type QuantizedTopology = {
     type: "Topology";
@@ -19,6 +22,22 @@ export type QuantizedTopology = {
         counties: GeometryObject<GeoJsonProperties>;
     };
     arcs: number[][][];
+}
+
+interface DistrictProperties {
+    ALAND: number;
+    AWATER: number;
+    CD119FP: string;
+    CDSESSN: string;
+    FUNCSTAT: string;
+    GEOID: string;
+    GEOIDFQ: string;
+    INTPTLAT: string;
+    INTPTLON: string;
+    LSAD: string;
+    MTFCC: string;
+    NAMELSAD: string;
+    STATEFP: string;
 }
 
 interface StateProperties {
